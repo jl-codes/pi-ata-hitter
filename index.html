@@ -1,0 +1,171 @@
+<head>
+  <style>
+    body{
+      background-image:
+        url("http://miriadna.com/desctopwalls/images/max/Meadow-with-yellow-flowers.jpg");
+        linear-gradient(
+          rgba(0, 0, 0, 0.5),
+          rgba(0, 0, 0, 0.5)
+        );
+    }
+
+    #container {
+      background-color:white;
+      border: solid black 1px;
+      border-radius: 5px;
+      width:500px;
+      height: 500px;
+      margin:100 100 100 100;
+      word-wrap: break-word;
+    }
+    div#staging{
+      height:200px;
+      width:200px;
+      position:relative;
+      margin-left:130;
+    }
+
+    img#miner, img#bludgeon, img#gun {
+      height:25px;
+      width: 25px;
+    }
+
+    div#pointArea {
+      position:relative;
+      top: 120;
+      left: 220;
+      background:
+        url('http://image.flaticon.com/icons/svg/123/123217.svg');
+      height: 70;
+      width:  70;
+      background-size:cover;
+    }
+    span#points{
+      margin:0;
+      position:absolute;
+      top:40%;
+      left:40%;
+    }
+
+
+    table#unlocks {
+      position: relative;;
+      bottom: 70;
+      left:120;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div id=container>
+    <h1 align=center>Hit&#241;ata</h1>
+    <div id=staging align=center><img src=http://i.imgur.com/AbdfSR5.png id=pinata height=200px width=200px></div>
+    <div id=pointArea>
+      <span id=points>0</span>
+    </div>
+
+    <table id=unlocks>
+      <tr>
+        <td><img src="http://image.flaticon.com/icons/svg/10/10716.svg" id=miner>Miner<td><button value="miner" disabled>10 candies</button></td>
+      </tr>
+      <tr>
+        <td><img src="http://image.flaticon.com/icons/svg/134/134034.svg" id=bludgeon>Bludgeon</td><td><button value="bludgeon" disabled>100 candies</button></td>
+      </tr>
+      <tr>
+        <td><img src="http://image.flaticon.com/icons/svg/182/182415.svg" id=gun>Gun</td><td><button value="gun" disabled>2000 candies</button></td>
+      </tr>
+    </table>
+  </div>
+</body>
+
+<script>
+
+  var pinata = document.getElementById("pinata");
+  var pointsTarget = document.getElementById("points");
+  //pinata.style.left = pointsTarget.style.left = window.innerWidth/2;
+  var points = 0;
+  var TICK_TIME = 1000;
+  var tickValue = 0;
+  var btns = [].slice.call(document.getElementsByTagName("button"));
+  btns.forEach(function(btn){btn.disabled=true;})
+  var costs = {
+  	'miner':10,
+    'bludgeon':100,
+    'gun':2000
+  };
+  var tools = {
+    'hand': 1,
+    'bludgeon': 100,
+    'gun': 200
+  };
+
+  usage = 'hand';
+
+  pinata.onmousedown = function(){
+
+  	updatePoint(tools[usage]);
+    pinata.style.height = '190px';
+    pinata.style.width = '190px';
+
+  };
+
+
+
+  pinata.onmouseup = function(){
+  	pinata.style.height = '200px';
+    pinata.style.width = '200px';
+
+    btns.map(function(btn){
+      if(points >= costs[btn.value]) btn.disabled = false;
+      else btn.disabled = true;
+    })
+  };
+
+  btns.map(function(btn){
+    btn.onclick = function(){
+      updatePoint(-costs[btn.value]);
+      if(btn.value == 'miner'){
+        tickValue += 1;
+        updateTickValue();
+        btn
+      } else {
+        usage = btn.value;
+      }
+    }
+  })
+
+  function updatePoint(value){
+    pointsTarget.innerHTML = points += value;
+    spawnMessage('hit');
+  }
+
+  function spawnMessage(source){
+
+    var div = document.createElement("div");
+    div.innerHTML = "<strong>*WHAP*</strong>";//{"WHAP", "THWACK", "POW", "AY"}[0] +//round(Math.random()*4,2)] +
+    div.style = "position:relative; top:-100; left:-75;";
+    document.getElementById('staging').appendChild(div);
+    var remainingTime = 100;
+    var pos = -100;
+    var id = setInterval(frame, 10);
+
+    function frame(){
+      if(remainingTime == 0){
+        clearInterval(id);
+        div.remove();
+      } else{
+        remainingTime--;
+        div.style.top = pos + 'px';
+        div.style.left= pos + 'px';
+      }
+    }
+
+  }
+
+  function updateTickValue(){
+    var timer = setInterval(function(){updatePoint(tickValue);}, TICK_TIME);
+  }
+
+
+</script>
